@@ -45,7 +45,7 @@ if __name__ == "__main__":
     BATCH_SIZE = 4096
 
     sess_feature = ['cate_id', 'brand']
-    TEST_BATCH_SIZE = 2 ** 16
+    TEST_BATCH_SIZE = 2 ** 14
 
     model = DSIN(fd, sess_feature, embedding_size=4, sess_max_count=sess_count,
                  sess_len_max=sess_len_max, dnn_hidden_units=(200, 80), att_head_num=8,

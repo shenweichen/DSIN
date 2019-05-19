@@ -44,7 +44,7 @@ if __name__ == "__main__":
     sess_len_max = SESS_MAX_LEN
     BATCH_SIZE = 4096
     sess_feature = ['cate_id', 'brand']
-    TEST_BATCH_SIZE = 2 ** 17
+    TEST_BATCH_SIZE = 2 ** 14
 
     model = DIEN(fd, sess_feature, 4, sess_len_max, "AUGRU", att_hidden_units=(64, 16),
                  att_activation='sigmoid', use_negsampling=DIEN_NEG_SAMPLING)

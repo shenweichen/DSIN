@@ -10,7 +10,7 @@ In Proceedings of 28th International Joint Conference on Artificial Intelligence
 ## Operating environment
 - python==3.6
 - tensorflow-gpu==1.4.0
-- deepctr==0.4.0.post0
+- deepctr==0.4.1
 - numpy==1.15.1
 - pandas==0.22.0
 - scikit-learn==0.19.2

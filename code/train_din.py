@@ -42,7 +42,7 @@ if __name__ == "__main__":
     BATCH_SIZE = 4096
 
     sess_feature = ['cate_id', 'brand']
-    TEST_BATCH_SIZE = 2 ** 17
+    TEST_BATCH_SIZE = 2 ** 14
 
     model = DIN(fd, sess_feature, embedding_size=4, att_activation='dice',
                 att_weight_normalization=False, hist_len_max=sess_len_max, dnn_hidden_units=(200, 80),
