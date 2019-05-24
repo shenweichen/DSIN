@@ -2,7 +2,7 @@
 
 Experiment code on Advertising Dataset of paper Deep Session Interest Network for Click-Through Rate Prediction(https://arxiv.org/abs/1905.06482)  
 
-Yufei Feng , Fuyu Lv, Weichen Shen and Menghan Wang and Fei Sun and Yu Zhu and Keping Yang.  
+[Yufei Feng](https://github.com/649435349) , Fuyu Lv, Weichen Shen and Menghan Wang and Fei Sun and Yu Zhu and Keping Yang.  
 
 In Proceedings of 28th International Joint Conference on Artificial Intelligence (IJCAI 2019)
 
@@ -44,3 +44,7 @@ generate historical session sequence for each user
 1. run `2_gen_dsin_input.py`,generate input data
 2. run `train_dsin.py`
    > The loss of DSIN with `bias_encoding=True` may be NaN sometimes on Advertising Dataset and it remains a confusing problem since it never occurs in the production environment.We will work on it and also appreciate your help.
+
+# License
+
+This project is licensed under the terms of the  Apache-2 license. See [LICENSE](./LICENSE) for additional details.
