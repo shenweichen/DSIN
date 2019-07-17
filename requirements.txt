@@ -1,0 +1,8 @@
+deepctr==0.4.1
+joblib==0.13.2
+numpy==1.16.4
+pandas==0.22.0
+requests==2.22.0
+scikit-learn==0.19.2
+tensorflow-gpu==1.4.0
+tqdm==4.32.2

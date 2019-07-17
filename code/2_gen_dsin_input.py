@@ -149,7 +149,7 @@ if __name__ == "__main__":
         sess_name = 'sess_' + str(i)
         for feat in sess_feature:
             sess_input.append(pad_sequences(
-                sess_input_dict[sess_name][feat], maxlen=SESS_COUNT, padding='post'))
+                sess_input_dict[sess_name][feat], maxlen=DSIN_SESS_MAX_LEN, padding='post'))
         sess_input_length.append(sess_input_length_dict[sess_name])
 
     model_input = [data[feat.name].values for feat in sparse_feature_list] + \

@@ -8,13 +8,9 @@ In Proceedings of 28th International Joint Conference on Artificial Intelligence
 
 ----------------
 ## Operating environment
-- python==3.6
-- tensorflow-gpu==1.4.0
-- deepctr==0.4.1
-- numpy==1.15.1
-- pandas==0.22.0
-- scikit-learn==0.19.2
-- tqdm==4.19.5
+please use 
+`pip install -r requirements.txt`
+to setup the operating environment in `python3.6`.
 
 --------------------------
 ## Download dataset and preprocess
