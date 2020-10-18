@@ -7,7 +7,7 @@ from sklearn.metrics import log_loss, roc_auc_score
 from tensorflow.python.keras import backend as K
 
 from config import DSIN_SESS_COUNT, DSIN_SESS_MAX_LEN, FRAC
-from models import DSIN
+from deepctr.models import DSIN
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 tfconfig = tf.ConfigProto()
@@ -34,8 +34,8 @@ if __name__ == "__main__":
     test_idx = sample_sub.loc[sample_sub.time_stamp >=
                               1494633600, 'idx'].values
 
-    train_input = [i[train_idx] for i in model_input]
-    test_input = [i[test_idx] for i in model_input]
+    train_input = {k: v[train_idx] for k, v in model_input.items()}
+    test_input = {k: v[test_idx] for k, v in model_input.items()}
 
     train_label = label[train_idx]
     test_label = label[test_idx]
@@ -47,8 +47,7 @@ if __name__ == "__main__":
     sess_feature = ['cate_id', 'brand']
     TEST_BATCH_SIZE = 2 ** 14
 
-    model = DSIN(fd, sess_feature, embedding_size=4, sess_max_count=sess_count,
-                 sess_len_max=sess_len_max, dnn_hidden_units=(200, 80), att_head_num=8,
+    model = DSIN(fd, sess_feature, sess_max_count=sess_count, dnn_hidden_units=(200, 80), att_head_num=8,
                  att_embedding_size=1, bias_encoding=False)
 
     model.compile('adagrad', 'binary_crossentropy',

@@ -4,12 +4,11 @@ import os
 
 import numpy as np
 import pandas as pd
-from deepctr.utils import SingleFeat
+from config import DIN_SESS_MAX_LEN, FRAC
+from deepctr.feature_column import SparseFeat, DenseFeat, VarLenSparseFeat
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 from tqdm import tqdm
-
-from config import DIN_SESS_MAX_LEN, FRAC
 
 
 def gen_sess_feature_din(row):
@@ -86,10 +85,11 @@ if __name__ == "__main__":
     mms = StandardScaler()
     data[dense_features] = mms.fit_transform(data[dense_features])
 
-    sparse_feature_list = [SingleFeat(feat, data[feat].nunique(
+    sparse_feature_list = [SparseFeat(feat, vocabulary_size=data[feat].max(
     ) + 1) for feat in sparse_features + ['cate_id', 'brand']]
 
-    dense_feature_list = [SingleFeat(feat, 1) for feat in dense_features]
+    dense_feature_list = [DenseFeat(feat, dimension=1) for feat in dense_features]
+
     sess_feature = ['cate_id', 'brand']
 
     sess_input = [pad_sequences(
@@ -100,6 +100,19 @@ if __name__ == "__main__":
     sess_lists = sess_input  # + [np.array(sess_input_length)]
     model_input += sess_lists
 
+    feature_dict = {}
+    for feat in sparse_feature_list + dense_feature_list:
+        feature_dict[feat.name] = data[feat.name].values
+    for feat in sess_feature:
+        feature_dict['hist_' + feat] = pad_sequences(
+            sess_input_dict[feat], maxlen=DIN_SESS_MAX_LEN, padding='post')
+    sparse_feature_list += [
+        VarLenSparseFeat(SparseFeat('hist_cate_id', vocabulary_size=data['cate_id'].max(
+        ) + 1, embedding_name='cate_id'), maxlen=DIN_SESS_MAX_LEN),
+        VarLenSparseFeat(SparseFeat('hist_brand', vocabulary_size=data['brand'].max(
+        ) + 1, embedding_name='brand'), maxlen=DIN_SESS_MAX_LEN)]
+    feature_columns = sparse_feature_list + dense_feature_list
+    model_input = feature_dict
     if not os.path.exists('../model_input/'):
         os.mkdir('../model_input/')
 
@@ -110,7 +123,7 @@ if __name__ == "__main__":
 
     pd.to_pickle(data['clk'].values, '../model_input/din_label_' +
                  str(FRAC) + '_' + str(DIN_SESS_MAX_LEN) + '.pkl')
-    pd.to_pickle({'sparse': sparse_feature_list, 'dense': dense_feature_list},
+    pd.to_pickle(feature_columns,
                  '../model_input/din_fd_' + str(FRAC) + '_' + str(DIN_SESS_MAX_LEN) + '.pkl', )
 
     print("gen din input done")

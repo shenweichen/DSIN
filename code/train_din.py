@@ -3,11 +3,10 @@ import os
 
 import pandas as pd
 import tensorflow as tf
+from config import DIN_SESS_MAX_LEN, FRAC
+from deepctr.models import DIN
 from sklearn.metrics import log_loss, roc_auc_score
 from tensorflow.python.keras import backend as K
-
-from config import DIN_SESS_MAX_LEN, FRAC
-from models import DIN
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 tfconfig = tf.ConfigProto()
@@ -33,8 +32,8 @@ if __name__ == "__main__":
     test_idx = sample_sub.loc[sample_sub.time_stamp >=
                               1494633600, 'idx'].values
 
-    train_input = [i[train_idx] for i in model_input]
-    test_input = [i[test_idx] for i in model_input]
+    train_input = {k: v[train_idx] for k, v in model_input.items()}
+    test_input = {k: v[test_idx] for k, v in model_input.items()}
     train_label = label[train_idx]
     test_label = label[test_idx]
 
@@ -43,15 +42,16 @@ if __name__ == "__main__":
 
     sess_feature = ['cate_id', 'brand']
     TEST_BATCH_SIZE = 2 ** 14
+    print(fd)
 
-    model = DIN(fd, sess_feature, embedding_size=4, att_activation='dice',
-                att_weight_normalization=False, hist_len_max=sess_len_max, dnn_hidden_units=(200, 80),
+    model = DIN(fd, sess_feature, att_activation='dice',
+                att_weight_normalization=False, dnn_hidden_units=(200, 80),
                 att_hidden_size=(64, 16,))
 
     model.compile('adagrad', 'binary_crossentropy',
                   metrics=['binary_crossentropy', ])
 
-    hist_ = model.fit(train_input[:], train_label,
+    hist_ = model.fit(train_input, train_label,
                       batch_size=BATCH_SIZE, epochs=1, initial_epoch=0, verbose=1, )
     pred_ans = model.predict(test_input, TEST_BATCH_SIZE)
 
