@@ -7,7 +7,7 @@ from sklearn.metrics import log_loss, roc_auc_score
 from tensorflow.python.keras import backend as K
 
 from config import DIN_SESS_MAX_LEN, FRAC
-from models import DIEN
+from deepctr.models import DIEN
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 tfconfig = tf.ConfigProto()
@@ -35,8 +35,8 @@ if __name__ == "__main__":
     test_idx = sample_sub.loc[sample_sub.time_stamp >=
                               1494633600, 'idx'].values
 
-    train_input = [i[train_idx] for i in model_input]
-    test_input = [i[test_idx] for i in model_input]
+    train_input = {k: v[train_idx] for k, v in model_input.items()}
+    test_input = {k: v[test_idx] for k, v in model_input.items()}
 
     train_label = label[train_idx]
     test_label = label[test_idx]
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     sess_feature = ['cate_id', 'brand']
     TEST_BATCH_SIZE = 2 ** 14
 
-    model = DIEN(fd, sess_feature, 4, sess_len_max, "AUGRU", att_hidden_units=(64, 16),
+    model = DIEN(fd, sess_feature, gru_type= "AUGRU", att_hidden_units=(64, 16),
                  att_activation='sigmoid', use_negsampling=DIEN_NEG_SAMPLING)
 
     model.compile('adagrad', 'binary_crossentropy',
