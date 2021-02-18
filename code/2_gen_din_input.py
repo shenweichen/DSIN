@@ -86,7 +86,7 @@ if __name__ == "__main__":
     mms = StandardScaler()
     data[dense_features] = mms.fit_transform(data[dense_features])
 
-    sparse_feature_list = [SingleFeat(feat, data[feat].nunique(
+    sparse_feature_list = [SingleFeat(feat, data[feat].max(
     ) + 1) for feat in sparse_features + ['cate_id', 'brand']]
 
     dense_feature_list = [SingleFeat(feat, 1) for feat in dense_features]
