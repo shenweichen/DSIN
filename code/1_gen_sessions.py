@@ -82,10 +82,10 @@ def gen_user_hist_sessions(model, FRAC=0.25):
         df_grouped = sub_data.groupby('user')
         if model == 'din':
             user_hist_session = applyParallel(
-                df_grouped, gen_session_list_din, n_jobs=20, backend='loky')
+                df_grouped, gen_session_list_din, n_jobs=10, backend='loky')
         else:
             user_hist_session = applyParallel(
-                df_grouped, gen_session_list_dsin, n_jobs=20, backend='multiprocessing')
+                df_grouped, gen_session_list_dsin, n_jobs=10, backend='multiprocessing')
         pd.to_pickle(user_hist_session, '../sampled_data/user_hist_session_' +
                      str(FRAC) + '_' + model + '_' + str(i) + '.pkl')
         print(i, 'pickled')

@@ -19,7 +19,7 @@ if __name__ == "__main__":
     DIEN_NEG_SAMPLING = True
     FRAC = FRAC
     SESS_MAX_LEN = DIN_SESS_MAX_LEN
-    fd = pd.read_pickle('../model_input/dien_fd_' +
+    dnn_feature_columns = pd.read_pickle('../model_input/dien_fd_' +
                         str(FRAC) + '_' + str(SESS_MAX_LEN) + '.pkl')
     model_input = pd.read_pickle(
         '../model_input/dien_input_' + str(FRAC) + '_' + str(SESS_MAX_LEN) + '.pkl')
@@ -43,11 +43,24 @@ if __name__ == "__main__":
 
     sess_len_max = SESS_MAX_LEN
     BATCH_SIZE = 4096
-    sess_feature = ['cate_id', 'brand']
+    history_feature_list = ['cate_id', 'brand']
     TEST_BATCH_SIZE = 2 ** 14
 
-    model = DIEN(fd, sess_feature, gru_type= "AUGRU", att_hidden_units=(64, 16),
-                 att_activation='sigmoid', use_negsampling=DIEN_NEG_SAMPLING)
+    model = DIEN(dnn_feature_columns, history_feature_list,#v0.9.2
+         gru_type="AUGRU", use_negsampling=DIEN_NEG_SAMPLING, dnn_hidden_units=(200, 80),
+         dnn_activation='relu',
+         att_hidden_units=(64, 16), att_activation="sigmoid", )
+
+# def DIEN(feature_dim_dict, seq_feature_list, embedding_size=8, hist_len_max=16, #origin
+#          gru_type="GRU", use_negsampling=False, alpha=1.0, use_bn=False, dnn_hidden_units=(200, 80),
+#          dnn_activation='relu',
+#          att_hidden_units=(64, 16), att_activation="dice", att_weight_normalization=True,
+#          l2_reg_dnn=0, l2_reg_embedding=1e-6, dnn_dropout=0, init_std=0.0001, seed=1024, task='binary')
+
+# def DIEN(dnn_feature_columns, history_feature_list,#v0.9.2
+#          gru_type="AUGRU", use_negsampling=DIEN_NEG_SAMPLING, dnn_hidden_units=(200, 80),
+#          dnn_activation='relu',
+#          att_hidden_units=(64, 16), att_activation="sigmoid", )
 
     model.compile('adagrad', 'binary_crossentropy',
                   metrics=['binary_crossentropy', ])

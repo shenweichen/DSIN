@@ -9,7 +9,7 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 from tqdm import tqdm
 
-from config import DIN_SESS_MAX_LEN, FRAC
+from config import DIN_SESS_MAX_LEN, FRAC, ID_OFFSET
 
 
 def gen_sess_feature_din(row):
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     data[dense_features] = mms.fit_transform(data[dense_features])
 
     sparse_feature_list = [SparseFeat(feat, vocabulary_size=data[feat].max(
-    ) + 1) for feat in sparse_features + ['cate_id', 'brand']]
+    ) + ID_OFFSET) for feat in sparse_features + ['cate_id', 'brand']]
 
     dense_feature_list = [DenseFeat(feat, dimension=1) for feat in dense_features]
     sess_feature = ['cate_id', 'brand']
@@ -165,14 +165,14 @@ if __name__ == "__main__":
 
     sparse_feature_list += [
         VarLenSparseFeat(SparseFeat('hist_cate_id', vocabulary_size=data['cate_id'].max(
-        ) + 1, embedding_name='cate_id'), maxlen=DIN_SESS_MAX_LEN, length_name="seq_length"),
+        ) + ID_OFFSET, embedding_name='cate_id'), maxlen=DIN_SESS_MAX_LEN, length_name="seq_length"),
         VarLenSparseFeat(SparseFeat('hist_brand', vocabulary_size=data['brand'].max(
-        ) + 1, embedding_name='brand'), maxlen=DIN_SESS_MAX_LEN, length_name="seq_length"),
+        ) + ID_OFFSET, embedding_name='brand'), maxlen=DIN_SESS_MAX_LEN, length_name="seq_length"),
 
         VarLenSparseFeat(SparseFeat('neg_hist_cate_id', vocabulary_size=data['cate_id'].max(
-        ) + 1, embedding_name='cate_id'), maxlen=DIN_SESS_MAX_LEN, length_name="seq_length"),
+        ) + ID_OFFSET, embedding_name='cate_id'), maxlen=DIN_SESS_MAX_LEN, length_name="seq_length"),
         VarLenSparseFeat(SparseFeat('neg_hist_brand', vocabulary_size=data['brand'].max(
-        ) + 1, embedding_name='brand'), maxlen=DIN_SESS_MAX_LEN, length_name="seq_length")
+        ) + ID_OFFSET, embedding_name='brand'), maxlen=DIN_SESS_MAX_LEN, length_name="seq_length")
     ]
 
     feature_columns = sparse_feature_list + dense_feature_list

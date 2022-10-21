@@ -4,7 +4,7 @@ import os
 
 import numpy as np
 import pandas as pd
-from config import DSIN_SESS_COUNT, DSIN_SESS_MAX_LEN, FRAC
+from config import DSIN_SESS_COUNT, DSIN_SESS_MAX_LEN, FRAC, ID_OFFSET
 from deepctr.feature_column import SparseFeat, DenseFeat, VarLenSparseFeat
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from tensorflow.python.keras.preprocessing.sequence import pad_sequences
@@ -138,7 +138,7 @@ if __name__ == "__main__":
     data[dense_features] = mms.fit_transform(data[dense_features])
 
     sparse_feature_list = [SparseFeat(feat, vocabulary_size=data[feat].max(
-    ) + 1) for feat in sparse_features + ['cate_id', 'brand']]
+    ) + ID_OFFSET) for feat in sparse_features + ['cate_id', 'brand']]
     dense_feature_list = [DenseFeat(feat, dimension=1) for feat in dense_features]
     sess_feature = ['cate_id', 'brand']
 
@@ -166,7 +166,7 @@ if __name__ == "__main__":
                 sess_input_dict[sess_name][feat], maxlen=DSIN_SESS_MAX_LEN, padding='post')
             sparse_feature_list.append(
                 VarLenSparseFeat(SparseFeat(sess_name + '_' + feat, vocabulary_size=data[feat].max(
-                ) + 1, embedding_name='feat'),
+                ) + ID_OFFSET, embedding_name='feat'),
                                  maxlen=DSIN_SESS_MAX_LEN))
     feature_dict['sess_length'] = np.array(sess_length_list)
 

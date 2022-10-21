@@ -4,7 +4,7 @@ import os
 
 import numpy as np
 import pandas as pd
-from config import DIN_SESS_MAX_LEN, FRAC
+from config import DIN_SESS_MAX_LEN, FRAC, ID_OFFSET
 from deepctr.feature_column import SparseFeat, DenseFeat, VarLenSparseFeat
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from tensorflow.python.keras.preprocessing.sequence import pad_sequences
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     data[dense_features] = mms.fit_transform(data[dense_features])
 
     sparse_feature_list = [SparseFeat(feat, vocabulary_size=data[feat].max(
-    ) + 1) for feat in sparse_features + ['cate_id', 'brand']]
+    ) + ID_OFFSET) for feat in sparse_features + ['cate_id', 'brand']]
 
     dense_feature_list = [DenseFeat(feat, dimension=1) for feat in dense_features]
 
@@ -108,9 +108,9 @@ if __name__ == "__main__":
             sess_input_dict[feat], maxlen=DIN_SESS_MAX_LEN, padding='post')
     sparse_feature_list += [
         VarLenSparseFeat(SparseFeat('hist_cate_id', vocabulary_size=data['cate_id'].max(
-        ) + 1, embedding_name='cate_id'), maxlen=DIN_SESS_MAX_LEN),
+        ) + ID_OFFSET, embedding_name='cate_id'), maxlen=DIN_SESS_MAX_LEN),
         VarLenSparseFeat(SparseFeat('hist_brand', vocabulary_size=data['brand'].max(
-        ) + 1, embedding_name='brand'), maxlen=DIN_SESS_MAX_LEN)]
+        ) + ID_OFFSET, embedding_name='brand'), maxlen=DIN_SESS_MAX_LEN)]
     feature_columns = sparse_feature_list + dense_feature_list
     model_input = feature_dict
     if not os.path.exists('../model_input/'):
