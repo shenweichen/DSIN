@@ -42,23 +42,9 @@ if __name__ == "__main__":
 
     sess_feature_list = ['cate_id', 'brand']
     TEST_BATCH_SIZE = 2 ** 14
-    # print(fd)
 
-    # model = DIN(fd, sess_feature, att_activation='dice',
-    #             att_weight_normalization=False, dnn_hidden_units=(200, 80),
-    #             att_hidden_size=(64, 16,))
     model = DIN(dnn_feature_columns, sess_feature_list, dnn_hidden_units=(200, 80), dnn_activation='relu',
-                att_hidden_size=(64, 16), att_activation="sigmoid", )
-
-    # def DIN(feature_dim_dict, seq_feature_list, embedding_size=8, hist_len_max=16, #origin
-    #         dnn_use_bn=False, dnn_hidden_units=(200, 80), dnn_activation='relu', att_hidden_size=(80, 40),
-    #         att_activation="dice", att_weight_normalization=False,
-    #         l2_reg_dnn=0, l2_reg_embedding=1e-6, dnn_dropout=0, init_std=0.0001, seed=1024, task='binary')
-
-    # def DIN(dnn_feature_columns, history_feature_list, dnn_use_bn=False, #0.9.2
-    #         dnn_hidden_units=(256, 128, 64), dnn_activation='relu', att_hidden_size=(80, 40), att_activation="dice",
-    #         att_weight_normalization=False, l2_reg_dnn=0, l2_reg_embedding=1e-6, dnn_dropout=0, seed=1024,
-    #         task='binary'):
+                att_hidden_size=(64, 16))
 
     model.compile('adagrad', 'binary_crossentropy',
                   metrics=['binary_crossentropy', ])
