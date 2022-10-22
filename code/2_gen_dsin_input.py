@@ -4,12 +4,11 @@ import os
 
 import numpy as np
 import pandas as pd
-from deepctr.utils import SingleFeat
+from config import DSIN_SESS_COUNT, DSIN_SESS_MAX_LEN, FRAC, ID_OFFSET
+from deepctr.feature_column import SparseFeat, DenseFeat, VarLenSparseFeat
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from tensorflow.python.keras.preprocessing.sequence import pad_sequences
 from tqdm import tqdm
-
-from config import DSIN_SESS_COUNT, DSIN_SESS_MAX_LEN, FRAC
 
 FRAC = FRAC
 SESS_COUNT = DSIN_SESS_COUNT
@@ -138,24 +137,27 @@ if __name__ == "__main__":
     mms = StandardScaler()
     data[dense_features] = mms.fit_transform(data[dense_features])
 
-    sparse_feature_list = [SingleFeat(feat, data[feat].nunique(
-    ) + 1) for feat in sparse_features + ['cate_id', 'brand']]
-    dense_feature_list = [SingleFeat(feat, 1) for feat in dense_features]
+    sparse_feature_list = [SparseFeat(feat, vocabulary_size=data[feat].max(
+    ) + ID_OFFSET) for feat in sparse_features + ['cate_id', 'brand']]
+    dense_feature_list = [DenseFeat(feat, dimension=1) for feat in dense_features]
     sess_feature = ['cate_id', 'brand']
 
-    sess_input = []
-    sess_input_length = []
+    feature_dict = {}
+    for feat in sparse_feature_list + dense_feature_list:
+        feature_dict[feat.name] = data[feat.name].values
     for i in tqdm(range(SESS_COUNT)):
         sess_name = 'sess_' + str(i)
         for feat in sess_feature:
-            sess_input.append(pad_sequences(
-                sess_input_dict[sess_name][feat], maxlen=DSIN_SESS_MAX_LEN, padding='post'))
-        sess_input_length.append(sess_input_length_dict[sess_name])
+            feature_dict[sess_name + '_' + feat] = pad_sequences(
+                sess_input_dict[sess_name][feat], maxlen=DSIN_SESS_MAX_LEN, padding='post')
+            sparse_feature_list.append(
+                VarLenSparseFeat(SparseFeat(sess_name + '_' + feat, vocabulary_size=data[feat].max(
+                ) + ID_OFFSET, embedding_name='feat'),
+                                 maxlen=DSIN_SESS_MAX_LEN))
+    feature_dict['sess_length'] = np.array(sess_length_list)
 
-    model_input = [data[feat.name].values for feat in sparse_feature_list] + \
-                  [data[feat.name].values for feat in dense_feature_list]
-    sess_lists = sess_input + [np.array(sess_length_list)]
-    model_input += sess_lists
+    feature_columns = sparse_feature_list + dense_feature_list
+    model_input = feature_dict
 
     if not os.path.exists('../model_input/'):
         os.mkdir('../model_input/')
@@ -164,6 +166,6 @@ if __name__ == "__main__":
                  str(FRAC) + '_' + str(SESS_COUNT) + '.pkl')
     pd.to_pickle(data['clk'].values, '../model_input/dsin_label_' +
                  str(FRAC) + '_' + str(SESS_COUNT) + '.pkl')
-    pd.to_pickle({'sparse': sparse_feature_list, 'dense': dense_feature_list},
+    pd.to_pickle(feature_columns,
                  '../model_input/dsin_fd_' + str(FRAC) + '_' + str(SESS_COUNT) + '.pkl')
     print("gen dsin input done")

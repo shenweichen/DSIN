@@ -7,7 +7,7 @@ from sklearn.metrics import log_loss, roc_auc_score
 from tensorflow.python.keras import backend as K
 
 from config import DSIN_SESS_COUNT, DSIN_SESS_MAX_LEN, FRAC
-from models import DSIN
+from deepctr.models import DSIN
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 tfconfig = tf.ConfigProto()
@@ -18,8 +18,8 @@ if __name__ == "__main__":
     SESS_COUNT = DSIN_SESS_COUNT
     SESS_MAX_LEN = DSIN_SESS_MAX_LEN
 
-    fd = pd.read_pickle('../model_input/dsin_fd_' +
-                        str(FRAC) + '_' + str(SESS_COUNT) + '.pkl')
+    dnn_feature_columns = pd.read_pickle('../model_input/dsin_fd_' +
+                                         str(FRAC) + '_' + str(SESS_COUNT) + '.pkl')
     model_input = pd.read_pickle(
         '../model_input/dsin_input_' + str(FRAC) + '_' + str(SESS_COUNT) + '.pkl')
     label = pd.read_pickle('../model_input/dsin_label_' +
@@ -34,8 +34,8 @@ if __name__ == "__main__":
     test_idx = sample_sub.loc[sample_sub.time_stamp >=
                               1494633600, 'idx'].values
 
-    train_input = [i[train_idx] for i in model_input]
-    test_input = [i[test_idx] for i in model_input]
+    train_input = {k: v[train_idx] for k, v in model_input.items()}
+    test_input = {k: v[test_idx] for k, v in model_input.items()}
 
     train_label = label[train_idx]
     test_label = label[test_idx]
@@ -44,12 +44,12 @@ if __name__ == "__main__":
     sess_len_max = SESS_MAX_LEN
     BATCH_SIZE = 4096
 
-    sess_feature = ['cate_id', 'brand']
+    sess_feature_list = ['cate_id', 'brand']
     TEST_BATCH_SIZE = 2 ** 14
 
-    model = DSIN(fd, sess_feature, embedding_size=4, sess_max_count=sess_count,
-                 sess_len_max=sess_len_max, dnn_hidden_units=(200, 80), att_head_num=8,
-                 att_embedding_size=1, bias_encoding=False)
+    model = DSIN(dnn_feature_columns, sess_feature_list, sess_max_count=sess_count, bias_encoding=False,
+                 att_embedding_size=1, att_head_num=8, dnn_hidden_units=(200, 80), dnn_activation='relu',
+                 )
 
     model.compile('adagrad', 'binary_crossentropy',
                   metrics=['binary_crossentropy', ])
