@@ -142,20 +142,6 @@ if __name__ == "__main__":
     dense_feature_list = [DenseFeat(feat, dimension=1) for feat in dense_features]
     sess_feature = ['cate_id', 'brand']
 
-    sess_input = []
-    sess_input_length = []
-    # for i in tqdm(range(SESS_COUNT)):
-    #     sess_name = 'sess_' + str(i)
-    #     for feat in sess_feature:
-    #         sess_input.append(pad_sequences(
-    #             sess_input_dict[sess_name][feat], maxlen=DSIN_SESS_MAX_LEN, padding='post'))
-    #     sess_input_length.append(sess_input_length_dict[sess_name])
-    #
-    # model_input = [data[feat.name].values for feat in sparse_feature_list] + \
-    #               [data[feat.name].values for feat in dense_feature_list]
-    # sess_lists = sess_input + [np.array(sess_length_list)]
-    # model_input += sess_lists
-
     feature_dict = {}
     for feat in sparse_feature_list + dense_feature_list:
         feature_dict[feat.name] = data[feat.name].values

@@ -92,14 +92,6 @@ if __name__ == "__main__":
 
     sess_feature = ['cate_id', 'brand']
 
-    # sess_input = [pad_sequences(
-    #     sess_input_dict[feat], maxlen=DIN_SESS_MAX_LEN, padding='post') for feat in sess_feature]
-    #
-    # model_input = [data[feat.name].values for feat in sparse_feature_list] + \
-    #               [data[feat.name].values for feat in dense_feature_list]
-    # sess_lists = sess_input  # + [np.array(sess_input_length)]
-    # model_input += sess_lists
-
     feature_dict = {}
     for feat in sparse_feature_list + dense_feature_list:
         feature_dict[feat.name] = data[feat.name].values
