@@ -1,5 +1,5 @@
 deepctr==0.9.3
-joblib==1.0.1
+joblib==1.2.0
 numpy==1.16.6
 pandas==1.1.5
 requests==2.27.1
