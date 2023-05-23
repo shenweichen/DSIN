@@ -2,7 +2,7 @@ deepctr==0.9.3
 joblib==1.0.1
 numpy==1.16.6
 pandas==1.1.5
-requests==2.27.1
+requests==2.31.0
 scikit-learn==0.24.2
 tensorflow-gpu==1.4.0
 tqdm==4.36.1
